@@ -11,6 +11,7 @@ class CalendarContent extends StatelessWidget {
   final bool singleSelectionMode;
   final List<CalendarData>? calendarData;
   final bool Function(DateTime)? disableSelection;
+  final Color? backgroundColor;
 
   const CalendarContent({
     super.key,
@@ -22,6 +23,7 @@ class CalendarContent extends StatelessWidget {
     required this.singleSelectionMode,
     this.calendarData,
     this.disableSelection,
+    this.backgroundColor,
   });
 
   @override
@@ -30,6 +32,7 @@ class CalendarContent extends StatelessWidget {
     final weeks = dates.chunkDates(7);
 
     return Column(
+      spacing: 10,
       children: [
         const CalendarDayOfWeek(),
         ...weeks.map((week) {

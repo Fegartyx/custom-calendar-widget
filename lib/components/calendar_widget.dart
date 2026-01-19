@@ -84,36 +84,34 @@ class _CalendarWidgetState extends State<CalendarWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: ValueListenableBuilder(
-        valueListenable: yearMonthNotifier,
-        builder: (context, yearMonth, child) {
-          return Column(
-            children: [
-              CalendarHeader(
-                yearMonth: yearMonth,
-                onPreviousMonth: (date) {
-                  yearMonthNotifier.value = date;
-                },
-                onNextMonth: (date) {
-                  yearMonthNotifier.value = date;
-                },
-              ),
-              CalendarContent(
-                yearMonth: yearMonth,
-                selectedStartDate: widget.selectedStartDate,
-                selectedEndDate: widget.selectedEndDate,
-                onStartDateSelected: widget.onStartDateSelected,
-                onEndDateSelected: widget.onEndDateSelected,
-                singleSelectionMode: widget.singleSelectionMode,
-                calendarData: widget.calendarData,
-                disableSelection: widget.disableSelection,
-              ),
-            ],
-          );
-        },
-      ),
+    return ValueListenableBuilder(
+      valueListenable: yearMonthNotifier,
+      builder: (context, yearMonth, child) {
+        return Column(
+          spacing: 15,
+          children: [
+            CalendarHeader(
+              yearMonth: yearMonth,
+              onPreviousMonth: (date) {
+                yearMonthNotifier.value = date;
+              },
+              onNextMonth: (date) {
+                yearMonthNotifier.value = date;
+              },
+            ),
+            CalendarContent(
+              yearMonth: yearMonth,
+              selectedStartDate: widget.selectedStartDate,
+              selectedEndDate: widget.selectedEndDate,
+              onStartDateSelected: widget.onStartDateSelected,
+              onEndDateSelected: widget.onEndDateSelected,
+              singleSelectionMode: widget.singleSelectionMode,
+              calendarData: widget.calendarData,
+              disableSelection: widget.disableSelection,
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -16,9 +16,32 @@ class MainApp extends StatelessWidget {
         appBar: AppBar(title: const Text('Calendar')),
         body: ListView(
           children: [
-            const SingleSelectionCalendar(),
-            const SizedBox(height: 32),
-            const RangeSelectionCalendar(),
+            Builder(
+              builder: (context) {
+                return ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: const SingleSelectionCalendar(),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: const Text('Show Dialog'),
+                );
+              },
+            ),
+            // const SingleSelectionCalendar(),
+            // const SizedBox(height: 32),
+            // const RangeSelectionCalendar(),
           ],
         ),
       ),
@@ -27,7 +50,8 @@ class MainApp extends StatelessWidget {
 }
 
 class SingleSelectionCalendar extends StatefulWidget {
-  const SingleSelectionCalendar({super.key});
+  final Color? backgroundColor;
+  const SingleSelectionCalendar({super.key, this.backgroundColor});
 
   @override
   State<SingleSelectionCalendar> createState() =>
@@ -45,35 +69,54 @@ class _SingleSelectionCalendarState extends State<SingleSelectionCalendar> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ValueListenableBuilder(
-          valueListenable: dateNotifier,
-          builder: (context, selectedDate, _) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CalendarWidget.single(
-                  selectedDate: selectedDate,
-                  onDateSelected: (date) {
-                    dateNotifier.value = date;
-                  },
-                  disableSelection: (date) {
-                    final isFirst = date.isFirstDayOfMonth();
-                    final isLast = date.isLastDayOfMonth();
+    return ValueListenableBuilder(
+      valueListenable: dateNotifier,
+      builder: (context, selectedDate, _) {
+        return Container(
+          decoration: BoxDecoration(
+            color: widget.backgroundColor ?? Theme.of(context).colorScheme.surface,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CalendarWidget.single(
+                selectedDate: selectedDate,
+                onDateSelected: (date) {
+                  dateNotifier.value = date;
+                },
+                disableSelection: (date) {
+                  final isFirst = date.isFirstDayOfMonth();
+                  final isLast = date.isLastDayOfMonth();
 
-                    return isFirst || isLast;
-                  },
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  "Selected Date : ${selectedDate?.format("dd MMMM yyyy") ?? "-"}",
-                ),
-              ],
-            );
-          },
-        ),
-      ],
+                  return isFirst || isLast;
+                },
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      debugPrint("selected $selectedDate ${dateNotifier.value}");
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text("CANCEL"),
+                  ),
+                  const SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () {
+                      debugPrint("selected $selectedDate ${dateNotifier.value}");
+                      Navigator.pop(context, selectedDate);
+                    },
+                    child: const Text("OK"),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
