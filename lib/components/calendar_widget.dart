@@ -10,8 +10,15 @@ class CalendarWidget extends StatefulWidget {
   final DateTime? selectedEndDate;
   final void Function(DateTime)? onStartDateSelected;
   final void Function(DateTime?)? onEndDateSelected;
+  final void Function(DateTime)? onMonthChanged;
   final List<CalendarData>? calendarData;
   final bool Function(DateTime)? disableSelection;
+  final Color? backgroundHeaderColor;
+  final Widget? iconBack, iconNext;
+  final TextStyle? textHeaderStyle;
+  final TextStyle? textWeekStyle;
+  final Color? todayTextColor, basicTextColor, backgroundColorSelected;
+  final double? fontSize;
 
   const CalendarWidget._({
     super.key,
@@ -23,6 +30,16 @@ class CalendarWidget extends StatefulWidget {
     this.onEndDateSelected,
     this.calendarData,
     this.disableSelection,
+    this.onMonthChanged,
+    this.backgroundHeaderColor,
+    this.iconBack,
+    this.iconNext,
+    this.textHeaderStyle,
+    this.textWeekStyle,
+    this.todayTextColor,
+    this.basicTextColor,
+    this.fontSize,
+    this.backgroundColorSelected,
   });
 
   factory CalendarWidget.single({
@@ -30,8 +47,18 @@ class CalendarWidget extends StatefulWidget {
     DateTime? initialYearMonth,
     DateTime? selectedDate,
     void Function(DateTime)? onDateSelected,
+    void Function(DateTime)? onMonthChanged,
     List<CalendarData>? calendarData,
     bool Function(DateTime)? disableSelection,
+    Color? backgroundHeaderColor,
+    Widget? iconBack,
+    Widget? iconNext,
+    TextStyle? textHeaderStyle,
+    TextStyle? textWeekStyle,
+    Color? todayTextColor,
+    Color? basicTextColor,
+    double? fontSize,
+    Color? backgroundColorSelected,
   }) {
     return CalendarWidget._(
       key: key,
@@ -41,6 +68,16 @@ class CalendarWidget extends StatefulWidget {
       onStartDateSelected: onDateSelected,
       calendarData: calendarData,
       disableSelection: disableSelection,
+      onMonthChanged: onMonthChanged,
+      backgroundHeaderColor: backgroundHeaderColor,
+      iconBack: iconBack,
+      iconNext: iconNext,
+      textHeaderStyle: textHeaderStyle,
+      textWeekStyle: textWeekStyle,
+      todayTextColor: todayTextColor,
+      basicTextColor: basicTextColor,
+      fontSize: fontSize,
+      backgroundColorSelected: backgroundColorSelected,
     );
   }
 
@@ -51,8 +88,18 @@ class CalendarWidget extends StatefulWidget {
     DateTime? selectedEndDate,
     void Function(DateTime)? onStartDateSelected,
     void Function(DateTime?)? onEndDateSelected,
+    void Function(DateTime)? onMonthChanged,
     List<CalendarData>? calendarData,
     bool Function(DateTime)? disableSelection,
+    Color? backgroundHeaderColor,
+    Widget? iconBack,
+    Widget? iconNext,
+    TextStyle? textHeaderStyle,
+    TextStyle? textWeekStyle,
+    Color? todayTextColor,
+    Color? basicTextColor,
+    double? fontSize,
+    Color? backgroundColorSelected,
   }) {
     return CalendarWidget._(
       key: key,
@@ -64,6 +111,16 @@ class CalendarWidget extends StatefulWidget {
       onEndDateSelected: onEndDateSelected,
       calendarData: calendarData,
       disableSelection: disableSelection,
+      onMonthChanged: onMonthChanged,
+      backgroundHeaderColor: backgroundHeaderColor,
+      iconBack: iconBack,
+      iconNext: iconNext,
+      textHeaderStyle: textHeaderStyle,
+      textWeekStyle: textWeekStyle,
+      todayTextColor: todayTextColor,
+      basicTextColor: basicTextColor,
+      fontSize: fontSize,
+      backgroundColorSelected: backgroundColorSelected
     );
   }
 
@@ -78,6 +135,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   void initState() {
     if (widget.initialYearMonth != null) {
       yearMonthNotifier.value = widget.initialYearMonth!;
+      widget.onMonthChanged?.call(yearMonthNotifier.value);
     }
     super.initState();
   }
@@ -91,15 +149,26 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           spacing: 15,
           children: [
             CalendarHeader(
+              iconBack: widget.iconBack,
+              iconNext: widget.iconNext,
+              textStyle: widget.textHeaderStyle,
+              backgroundColor: widget.backgroundHeaderColor,
               yearMonth: yearMonth,
               onPreviousMonth: (date) {
                 yearMonthNotifier.value = date;
+                widget.onMonthChanged?.call(date);
               },
               onNextMonth: (date) {
                 yearMonthNotifier.value = date;
+                widget.onMonthChanged?.call(date);
               },
             ),
             CalendarContent(
+              backgroundColor: widget.backgroundColorSelected,
+              fontSize: widget.fontSize,
+              todayTextColor: widget.todayTextColor,
+              basicTextColor: widget.basicTextColor,
+              textWeekStyle: widget.textWeekStyle,
               yearMonth: yearMonth,
               selectedStartDate: widget.selectedStartDate,
               selectedEndDate: widget.selectedEndDate,

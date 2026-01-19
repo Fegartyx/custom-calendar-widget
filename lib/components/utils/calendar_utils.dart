@@ -47,7 +47,7 @@ extension DateTimeExt on DateTime {
   }
 
   bool isFirstDayOfMonth() {
-    return day < 1;
+    return day == 1;
   }
 
   bool isLastDayOfMonth() {

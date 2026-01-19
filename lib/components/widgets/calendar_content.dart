@@ -11,7 +11,9 @@ class CalendarContent extends StatelessWidget {
   final bool singleSelectionMode;
   final List<CalendarData>? calendarData;
   final bool Function(DateTime)? disableSelection;
-  final Color? backgroundColor;
+  final TextStyle? textWeekStyle;
+  final Color? todayTextColor, basicTextColor,backgroundColor;
+  final double? fontSize;
 
   const CalendarContent({
     super.key,
@@ -23,6 +25,10 @@ class CalendarContent extends StatelessWidget {
     required this.singleSelectionMode,
     this.calendarData,
     this.disableSelection,
+    this.textWeekStyle,
+    this.todayTextColor,
+    this.basicTextColor,
+    this.fontSize,
     this.backgroundColor,
   });
 
@@ -31,35 +37,44 @@ class CalendarContent extends StatelessWidget {
     final dates = yearMonth.getDaysOfMonth;
     final weeks = dates.chunkDates(7);
 
-    return Column(
-      spacing: 10,
-      children: [
-        const CalendarDayOfWeek(),
-        ...weeks.map((week) {
-          return Row(
-            children:
-                week.map((date) {
-                  return CalendarDateItem(
-                    date: date,
-                    yearMonth: yearMonth,
-                    selectedStartDate: selectedStartDate,
-                    selectedEndDate: selectedEndDate,
-                    onStartDateSelected: onStartDateSelected,
-                    onEndDateSelected: onEndDateSelected,
-                    singleSelectionMode: singleSelectionMode,
-                    calendarData: calendarData,
-                    disableSelection: disableSelection,
-                  );
-                }).toList(),
-          );
-        }),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Column(
+        spacing: 10,
+        children: [
+          CalendarDayOfWeek(textStyle: textWeekStyle,),
+          ...weeks.map((week) {
+            return Row(
+              children:
+                  week.map((date) {
+                    return CalendarDateItem(
+                      backgroundColor: backgroundColor,
+                      todayText: todayTextColor,
+                      basicText: basicTextColor,
+                      fontSize: fontSize,
+                      date: date,
+                      yearMonth: yearMonth,
+                      selectedStartDate: selectedStartDate,
+                      selectedEndDate: selectedEndDate,
+                      onStartDateSelected: onStartDateSelected,
+                      onEndDateSelected: onEndDateSelected,
+                      singleSelectionMode: singleSelectionMode,
+                      calendarData: calendarData,
+                      disableSelection: disableSelection,
+                    );
+                  }).toList(),
+            );
+          }),
+        ],
+      ),
     );
   }
 }
 
 class CalendarDayOfWeek extends StatefulWidget {
-  const CalendarDayOfWeek({super.key});
+  final TextStyle? textStyle;
+
+  const CalendarDayOfWeek({super.key, this.textStyle});
 
   @override
   State<CalendarDayOfWeek> createState() => _CalendarDayOfWeekState();
@@ -67,12 +82,20 @@ class CalendarDayOfWeek extends StatefulWidget {
 
 class _CalendarDayOfWeekState extends State<CalendarDayOfWeek> {
   final daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
   @override
   Widget build(BuildContext context) {
     return Row(
       children:
           daysOfWeek.map((day) {
-            return Expanded(child: Text(day, textAlign: TextAlign.center));
+            return Expanded(
+              child: Text(
+                day,
+                textAlign: TextAlign.center,
+                style:
+                    widget.textStyle ?? Theme.of(context).textTheme.bodyMedium,
+              ),
+            );
           }).toList(),
     );
   }
@@ -87,6 +110,8 @@ class CalendarDateItem extends StatefulWidget {
   final bool singleSelectionMode;
   final List<CalendarData>? calendarData;
   final bool Function(DateTime)? disableSelection;
+  final Color? todayText, basicText, backgroundColor;
+  final double? fontSize;
 
   const CalendarDateItem({
     super.key,
@@ -99,6 +124,10 @@ class CalendarDateItem extends StatefulWidget {
     required this.singleSelectionMode,
     this.calendarData,
     this.disableSelection,
+    this.todayText,
+    this.basicText,
+    this.fontSize,
+    this.backgroundColor,
   });
 
   @override
@@ -110,10 +139,13 @@ class _CalendarDateItemState extends State<CalendarDateItem> {
       widget.disableSelection?.call(widget.date) ?? false;
 
   bool get isToday => widget.date.isSameDate(DateTime.now());
+
   bool get isCurrentVisibleMonth => widget.date.isSameMonth(widget.yearMonth);
 
   bool get isStartdate => widget.date.isSameDate(widget.selectedStartDate);
+
   bool get isEndDate => widget.date.isSameDate(widget.selectedEndDate);
+
   bool get isInRange =>
       widget.date.isBetween(widget.selectedStartDate, widget.selectedEndDate);
 
@@ -163,8 +195,8 @@ class _CalendarDateItemState extends State<CalendarDateItem> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  buildIndicator(context),
-                  buildDate(context),
+                  buildIndicator(context, backgroundColorValue: widget.backgroundColor),
+                  buildDate(context, widget.todayText, widget.basicText,fontSize: widget.fontSize),
                   if (widget.calendarData != null &&
                       widget.calendarData?.isNotEmpty == true)
                     Positioned(
@@ -180,16 +212,16 @@ class _CalendarDateItemState extends State<CalendarDateItem> {
                 ],
               ),
             ),
-              ),
-            ),
           ),
+        ),
+      ),
     );
   }
 
-  Widget buildIndicator(BuildContext context) {
+  Widget buildIndicator(BuildContext context, {Color? backgroundColorValue}) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final backgroundColor = Colors.blueGrey;
+        final backgroundColor = backgroundColorValue ?? Colors.blueGrey;
         final sizeRatio = 0.9;
         final size = constraints.maxHeight * sizeRatio;
         final maxWidth = constraints.maxWidth;
@@ -251,13 +283,14 @@ class _CalendarDateItemState extends State<CalendarDateItem> {
     );
   }
 
-  Widget buildDate(BuildContext context) {
+  Widget buildDate(BuildContext context, Color? todayText, Color? basicText, {double? fontSize = 14}) {
     return Opacity(
       opacity: isCurrentVisibleMonth && !disableSelection ? 1 : 0.3,
       child: Text(
         '${widget.date.day}',
         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-          color: isToday ? Colors.lightBlue : Colors.black,
+          fontSize: fontSize,
+          color: isToday ? todayText ?? Colors.lightBlue : basicText ?? Colors.black,
           fontWeight:
               isCurrentVisibleMonth ? FontWeight.bold : FontWeight.normal,
         ),
