@@ -1,5 +1,4 @@
-import 'package:custom_date_time/components/calendar_widget.dart';
-import 'package:custom_date_time/components/utils/calendar_utils.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart' hide DatePickerMode;
 
 import 'components/dialog/show_calendar_picker.dart';
@@ -14,6 +13,8 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      locale: DevicePreview.locale(context),
+      builder: DevicePreview.appBuilder,
       home: Scaffold(
         appBar: AppBar(title: const Text('Calendar')),
         body: ListView(
@@ -21,23 +22,29 @@ class MainApp extends StatelessWidget {
             Builder(
               builder: (context) {
                 return ElevatedButton(
-                  onPressed: () {
-                    showCalendarPicker(
+                  onPressed: () async {
+                    final data = await showCalendarPicker(
                       context: context,
-                      backgroundColor: Colors.white,
-                      backgroundHeaderColor: Colors.blueAccent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
+                      backgroundColor: const Color(0xFFFDEFC4),
+                      backgroundHeaderColor: const Color(0xFFD4A373),
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: Colors.black),
                       mode: DatePickerMode.single,
-                      contentBasicTextColor: Colors.green,
-                      contentTodayTextColor: Colors.red,
-                      contentSelectedDateColor: Colors.red,
+                      // contentBasicTextColor: Colors.green,
+                      // contentTodayTextColor: Colors.red,
+                      // contentSelectedDateColor: Colors.red,
+                      constraints: BoxConstraints(
+                        minWidth: MediaQuery.sizeOf(context).width * 0.4,
+                        maxWidth: MediaQuery.sizeOf(context).width * 0.8,
+                        minHeight: MediaQuery.sizeOf(context).height * 0.4,
+                        maxHeight: MediaQuery.sizeOf(context).height * 0.8,
+                      ),
                     );
+                    debugPrint("data $data");
                   },
                   child: const Text('Show Dialog'),
                 );
-              }
+              },
             ),
             // const SingleSelectionCalendar(),
             // const SizedBox(height: 32),
