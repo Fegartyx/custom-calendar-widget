@@ -1,5 +1,6 @@
 import 'package:custom_date_time/components/utils/calendar_data.dart';
 import 'package:custom_date_time/components/utils/calendar_utils.dart';
+import 'package:custom_date_time/components/utils/responsive.dart';
 import 'package:flutter/material.dart';
 
 class CalendarContent extends StatelessWidget {
@@ -38,7 +39,7 @@ class CalendarContent extends StatelessWidget {
     final weeks = dates.chunkDates(7);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0).r(context),
       child: Column(
         spacing: 10,
         children: [
@@ -93,7 +94,9 @@ class _CalendarDayOfWeekState extends State<CalendarDayOfWeek> {
                 day,
                 textAlign: TextAlign.center,
                 style:
-                    widget.textStyle ?? Theme.of(context).textTheme.bodyMedium,
+                    widget.textStyle ?? Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      fontSize: 14.r(context)
+                    ),
               ),
             );
           }).toList(),
@@ -190,23 +193,26 @@ class _CalendarDateItemState extends State<CalendarDateItem> {
         child: Container(
           color: Colors.transparent,
           child: AspectRatio(
-            aspectRatio: 1,
+            aspectRatio: 0.9,
             child: Center(
               child: Stack(
                 alignment: Alignment.center,
                 children: [
                   buildIndicator(context, backgroundColorValue: widget.backgroundColor),
-                  buildDate(context, widget.todayText, widget.basicText,fontSize: widget.fontSize),
+                  buildDate(context, widget.todayText, widget.basicText,fontSize: widget.fontSize ?? 14),
                   if (widget.calendarData != null &&
                       widget.calendarData?.isNotEmpty == true)
                     Positioned(
-                      bottom: 4,
+                      bottom: -3.r(context),
                       child: Text(
                         widget.calendarData
                                 ?.getCalendarData(widget.date)
                                 ?.info ??
                             '',
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                          fontSize: 10.r(context),
+                          fontWeight: FontWeight.bold
+                        ),
                       ),
                     ),
                 ],
@@ -283,16 +289,16 @@ class _CalendarDateItemState extends State<CalendarDateItem> {
     );
   }
 
-  Widget buildDate(BuildContext context, Color? todayText, Color? basicText, {double? fontSize = 14}) {
+  Widget buildDate(BuildContext context, Color? todayText, Color? basicText, {double fontSize = 14}) {
     return Opacity(
       opacity: isCurrentVisibleMonth && !disableSelection ? 1 : 0.3,
       child: Text(
         '${widget.date.day}',
         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-          fontSize: fontSize,
+          fontSize: fontSize.r(context),
           color: isToday ? todayText ?? Colors.lightBlue : basicText ?? Colors.black,
           fontWeight:
-              isCurrentVisibleMonth ? FontWeight.bold : FontWeight.normal,
+          isCurrentVisibleMonth ? FontWeight.bold : FontWeight.normal,
         ),
       ),
     );

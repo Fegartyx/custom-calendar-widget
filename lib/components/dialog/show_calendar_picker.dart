@@ -1,6 +1,8 @@
+import 'package:custom_date_time/components/utils/responsive.dart';
 import 'package:flutter/material.dart';
 
 import '../calendar_widget.dart';
+import '../utils/calendar_data.dart';
 
 Future<DateTime?> showCalendarPicker({
   required BuildContext context,
@@ -25,6 +27,7 @@ Future<DateTime?> showCalendarPicker({
   Color? contentSelectedDateColor,
   Color? boxShadowColor,
   double? contentFontSize,
+  List<CalendarData>? calendarData,
 }) {
   return showDialog(
     context: context,
@@ -32,14 +35,16 @@ Future<DateTime?> showCalendarPicker({
       return Align(
         alignment: Alignment.center,
         child: Container(
-          constraints: constraints,
+          constraints:
+              constraints ??
+              BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width / 1.3),
           decoration: BoxDecoration(
             borderRadius: borderRadius ?? BorderRadius.circular(12),
             border: border,
             boxShadow: [
               BoxShadow(
                 color: boxShadowColor ?? Colors.black,
-                offset: boxShadowOffset ?? const Offset(6, 6),
+                offset: boxShadowOffset ?? const Offset(6, 6).r(context),
               ),
             ],
           ),
@@ -60,6 +65,7 @@ Future<DateTime?> showCalendarPicker({
               initialStartDate: initialStartDate,
               backgroundColorSelected: contentSelectedDateColor,
               cancelSubmitWidget: cancelSubmitWidget,
+              calendarData: calendarData,
             ),
           ),
         ),
@@ -122,6 +128,7 @@ class _SingleSelectionCalendarState extends State<SingleSelectionCalendar> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
+            spacing: 16.r(context),
             children: [
               CalendarWidget.single(
                 initialYearMonth: widget.initialDate,
@@ -148,23 +155,30 @@ class _SingleSelectionCalendarState extends State<SingleSelectionCalendar> {
                       date.year != monthNotifier.value.year;
                 },
               ),
-              const SizedBox(height: 16),
               widget.cancelSubmitWidget ??
                   Row(
+                    spacing: 8.r(context),
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: const Text("CANCEL"),
+                        child: Text(
+                          "CANCEL",
+                          style: Theme.of(context).textTheme.bodyMedium!
+                              .copyWith(fontSize: 14.r(context)),
+                        ),
                       ),
-                      const SizedBox(width: 8),
                       TextButton(
                         onPressed: () {
                           Navigator.pop(context, dateNotifier.value);
                         },
-                        child: const Text("OK"),
+                        child: Text(
+                          "OK",
+                          style: Theme.of(context).textTheme.bodyMedium!
+                              .copyWith(fontSize: 14.r(context)),
+                        ),
                       ),
                     ],
                   ),
@@ -186,6 +200,7 @@ class RangeSelectionCalendar extends StatefulWidget {
   final TextStyle? textWeekStyle;
   final Color? todayTextColor, basicTextColor;
   final double? fontSize;
+  final List<CalendarData>? calendarData;
 
   const RangeSelectionCalendar({
     super.key,
@@ -203,6 +218,7 @@ class RangeSelectionCalendar extends StatefulWidget {
     this.basicTextColor,
     this.backgroundColorSelected,
     this.cancelSubmitWidget,
+    this.calendarData,
   });
 
   @override
@@ -226,6 +242,7 @@ class _RangeSelectionCalendarState extends State<RangeSelectionCalendar> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
+            spacing: 16.r(context),
             children: [
               CalendarWidget.range(
                 fontSize: widget.fontSize,
@@ -246,12 +263,8 @@ class _RangeSelectionCalendarState extends State<RangeSelectionCalendar> {
                 onEndDateSelected: (date) {
                   endDateNotifier.value = date;
                 },
-                // calendarData: [
-                //   CalendarData(date: DateTime(2026, 01, 05), info: "20"),
-                //   CalendarData(date: DateTime(2026, 01, 07), info: "25"),
-                // ],
+                calendarData: widget.calendarData,
               ),
-              const SizedBox(height: 16),
               widget.cancelSubmitWidget ??
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -260,7 +273,11 @@ class _RangeSelectionCalendarState extends State<RangeSelectionCalendar> {
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: const Text("CANCEL"),
+                        child: Text(
+                          "CANCEL",
+                          style: Theme.of(context).textTheme.bodyMedium!
+                              .copyWith(fontSize: 14.r(context)),
+                        ),
                       ),
                       const SizedBox(width: 8),
                       TextButton(
@@ -270,7 +287,9 @@ class _RangeSelectionCalendarState extends State<RangeSelectionCalendar> {
                             endDateNotifier.value,
                           ]);
                         },
-                        child: const Text("OK"),
+                        child: Text("OK", style: Theme.of(context).textTheme.bodyMedium!
+                            .copyWith(fontSize: 14.r(context)),
+                        ),
                       ),
                     ],
                   ),
@@ -300,6 +319,7 @@ extension DatePickerModeExtension on DatePickerMode {
     backgroundColorSelected,
     double? fontSize,
     Widget? cancelSubmitWidget,
+    List<CalendarData>? calendarData,
   }) {
     switch (this) {
       case DatePickerMode.single:
@@ -331,6 +351,9 @@ extension DatePickerModeExtension on DatePickerMode {
           basicTextColor: basicTextColor,
           initialDate: initialDate,
           cancelSubmitWidget: cancelSubmitWidget,
+          initialStartDate: initialStartDate,
+          initialEndDate: initialEndDate,
+          calendarData: calendarData,
         );
     }
   }

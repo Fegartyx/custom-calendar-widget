@@ -13,7 +13,6 @@ extension DateTimeExt on DateTime {
   List<DateTime> get getDaysOfMonth {
     // Get first day of that month
     final firstDayOfMonth = DateTime(year, month, 1);
-    debugPrint("Masuk Sini");
 
     // than search first monday in that month
     DateTime firstMondayOfMonth = firstDayOfMonth;
@@ -37,7 +36,6 @@ extension DateTimeExt on DateTime {
       date = date.add(const Duration(days: 1));
     }
 
-    debugPrint("Keluar Sini");
     return days;
   }
 

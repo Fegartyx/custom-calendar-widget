@@ -1,4 +1,5 @@
 import 'package:custom_date_time/components/utils/calendar_utils.dart';
+import 'package:custom_date_time/components/utils/responsive.dart';
 import 'package:flutter/material.dart';
 
 class CalendarHeader extends StatelessWidget {
@@ -22,7 +23,7 @@ class CalendarHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20).r(context),
       decoration: BoxDecoration(
         color: backgroundColor,
       ),
@@ -38,13 +39,15 @@ class CalendarHeader extends StatelessWidget {
               );
               onPreviousMonth?.call(previousMonth);
             },
-            child: iconBack ?? const Icon(Icons.arrow_back_ios_rounded, size: 20),
+            child: iconBack ?? Icon(Icons.arrow_back_ios_rounded, size: 20.r(context)),
           ),
           Expanded(
             child: Center(
               child: Text(
                 yearMonth.monthAndYear,
-                style: textStyle ?? Theme.of(context).textTheme.bodyLarge,
+                style: textStyle ?? Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  fontSize: 16.r(context),
+                ),
               ),
             ),
           ),
@@ -54,7 +57,7 @@ class CalendarHeader extends StatelessWidget {
 
               onNextMonth?.call(nextMonth);
             },
-            child: iconNext ?? const Icon(Icons.arrow_forward_ios_rounded, size: 20),
+            child: iconNext ?? Icon(Icons.arrow_forward_ios_rounded, size: 20.r(context)),
           ),
         ],
       ),
